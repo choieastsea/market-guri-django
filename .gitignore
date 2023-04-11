@@ -1,0 +1,4 @@
+guri-venv/
+.DS_Store
+*.pyc
+.env
