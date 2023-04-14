@@ -1,4 +1,7 @@
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.http import Http404
+from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import Item
 from .serializers import ItemSerializer
@@ -20,3 +23,52 @@ def create_item(request):
         itemSerializer.save()
         return Response(itemSerializer.data)
     return Response(itemSerializer.errors) # error occured
+
+class ItemListView(APIView):
+    """
+    item list를 리턴하거나 새로운 item을 create하는 클래스
+    """
+    def get(self, request):
+        items = Item.objects.all()
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = ItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
+
+class ItemDetailView(APIView):
+    """
+    특정 pk의 Item을 Read, Update, Delete하는 클래스
+    요청에 대하여 pk가 주어져야 한다
+    """
+    def get_object(self, pk):
+        # 특정 pk의 Item을 리턴
+        try:
+            return Item.objects.get(pk=pk)
+        except Item.DoesNotExist:
+            # Item이 없다면 DoesNotExist error throw
+            # 이에 404오류를 발생시키도록 한다
+            raise Http404
+        
+    def get(self, request, pk):
+        item = self.get_object(pk) # error 발생하면 이후 실행되지 않고 바로 404 response
+        serializer = ItemSerializer(item) # 직렬화(DB to json) 수행, 하나이므로 many=True일 필요없음
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        item = self.get_object(pk)
+        serializer = ItemSerializer(item, data=request.data, partial=True) # serailizer의 update 함수 수행, partial fields 업데이트 허용
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        item = self.get_object(pk)
+        item.delete()   # pk 기반의 삭제는 serializer를 사용하지 않고 ORM의 delete를 수행한다
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
