@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics, mixins, viewsets
 from django.http import Http404
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -71,4 +72,62 @@ class ItemDetailView(APIView):
         item = self.get_object(pk)
         item.delete()   # pk 기반의 삭제는 serializer를 사용하지 않고 ORM의 delete를 수행한다
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# GenericAPIView + mixins 이용한 CBV
+class ItemListGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    """
+    GenericAPIView를 이용하여 item의 리스트를 얻도록 하는 클래스
+    queryset과 serailizer_class 정의해줘야함.
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    def get(self, request): # get override
+        return self.list(request) # from mixins.ListModelMixin
     
+    def post(self, request): # post override
+        return self.create(request) # from mixins.CreateModelMixin
+
+class ItemDetailGenericAPIView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    def get(self, request, *args, **kargs):
+        return self.retrieve(self, request, *args, **kargs) # from mixins.RetrieveModelMixin
+
+    def put(self, request, *args, **kargs): # update override
+        return self.update(request, *args, **kargs) # from mixins.UpdateModelMixin
+    
+    def delete(self, request, *args, **kargs): # delete override
+        return self.destroy(request, *args, **kargs) # from mixins.DestroyModelMixin
+
+# Generic 이용한 CBV
+class ItemDetailGenericView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GenericView를 이용하여 item의 특정정보를 얻거나, 업데이트, 삭제 하도록 하는 클래스 
+    queryset, serializer_class를 정의해야함
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+class ItemListGenericView(generics.ListCreateAPIView):
+    """
+    GenericView를 이용하여 item의 list얻거나 create 하도록 하는 클래스 
+    queryset, serializer_class를 정의해야함
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+# ModelViewSet 이용한 CBV
+class ItemModelViewSet(viewsets.ModelViewSet):
+    """
+    ModelViewSet을 이용하여 item의 모든 기능을 제공하는 클래스
+    queryset, serializer_class만 정의하면 다양한 패턴에 대하여 구현 가능
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True # for partial update
+        return super().update(request, *args, **kwargs)
