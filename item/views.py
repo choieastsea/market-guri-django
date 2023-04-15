@@ -6,6 +6,28 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import Item
 from .serializers import ItemSerializer
+import django_filters.rest_framework
+
+
+# ModelViewSet 이용한 CBV
+class ItemModelViewSet(viewsets.ModelViewSet):
+    """
+    ModelViewSet을 이용하여 item의 모든 기능을 제공하는 클래스
+    queryset, serializer_class만 정의하면 다양한 패턴에 대하여 구현 가능
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    def get_queryset(self):
+        queryset = Item.objects.all()
+        name = self.request.query_params.get('name')
+        if name is not None:
+            queryset = queryset.filter(name__icontains=name)
+        return queryset
+    
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True # for partial update
+        return super().update(request, *args, **kwargs)
 
 @api_view(['GET'])
 def index(request):
@@ -118,16 +140,3 @@ class ItemListGenericView(generics.ListCreateAPIView):
     """
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-
-# ModelViewSet 이용한 CBV
-class ItemModelViewSet(viewsets.ModelViewSet):
-    """
-    ModelViewSet을 이용하여 item의 모든 기능을 제공하는 클래스
-    queryset, serializer_class만 정의하면 다양한 패턴에 대하여 구현 가능
-    """
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-
-    def update(self, request, *args, **kwargs):
-        kwargs['partial'] = True # for partial update
-        return super().update(request, *args, **kwargs)
