@@ -28,6 +28,14 @@ class ItemModelViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         kwargs['partial'] = True # for partial update
         return super().update(request, *args, **kwargs)
+    
+    def list(self, request, *args, **kwargs):
+        # print(request.META['HTTP_ORIGIN']) # CORS error가 발생하더라도 view가 실행됨
+        return super().list(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        print('create') # CORS error가 발생하더라도 view가 실행됨
+        return super().create(request, *args, **kwargs)
 
 @api_view(['GET'])
 def index(request):

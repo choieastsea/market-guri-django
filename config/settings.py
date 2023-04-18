@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # external apps
     'rest_framework',
     'django_filters',
+    'corsheaders',
     # internal apps
     'item.apps.ItemConfig', 
 ]
@@ -82,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application' # 웹서버와 장고를 연결해주는 gatewary interface
 
 
 # Database
@@ -141,6 +142,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_WHITELIST = [
+CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
