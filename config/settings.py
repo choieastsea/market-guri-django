@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # internal apps
     'item.apps.ItemConfig', 
+    'myuser.apps.MyuserConfig'
 ]
 
 MIDDLEWARE = [

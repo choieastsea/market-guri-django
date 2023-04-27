@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import Item
 from .serializers import ItemSerializer
-import django_filters.rest_framework
 
 
 # ModelViewSet 이용한 CBV
