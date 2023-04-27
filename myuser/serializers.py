@@ -15,7 +15,7 @@ class LoginSerializer(serializers.Serializer):
         username = data.get('username')
         password = data.get('password')
 
-        if len(username) > 0 and len(password) > 0:
+        if len(username) > 0 or len(password) > 0:
             user = authenticate(username=username, password=password)
             if user:
                 if user.is_active:
@@ -43,3 +43,20 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'profile')
         
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+class SignupSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    
+    class Meta:
+        model = Profile
+        fields = ('user', 'phone_number', 'address')
+    
+    def create(self, validated_data):
+        user_data = validated_data.pop('user') 
+        user = User.objects.create_user(**user_data) # create_user 함수에 순차적으로 인자 넣어줌
+        profile = Profile.objects.create(user=user, **validated_data)  # validated_data에서 user빠진 나머지(phone_number, address) 넣어줌
+        return profile
