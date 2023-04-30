@@ -86,6 +86,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application' # 웹서버와 장고를 연결해주는 gatewary interface
 
+# User model
+AUTH_USER_MODEL = 'myuser.Profile'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
