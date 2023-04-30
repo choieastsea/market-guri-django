@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import Profile
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+
 
 class LoginSerializer(serializers.Serializer):
     """
@@ -33,30 +34,11 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
-    
-class UserInfoSerializer(serializers.ModelSerializer):
-    """
-    user에 대하여 해당 사용자의 username과 profile 정보를 보여주는 serializer
-    """
-    profile = ProfileSerializer()   #one to one field이므로, user에 해당하는 profile을 가져오면 됨
-    class Meta:
-        model = User
-        fields = ('username', 'profile')
-        
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = "__all__"
-
-class SignupSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    
-    class Meta:
-        model = Profile
-        fields = ('user', 'phone_number', 'address')
-    
     def create(self, validated_data):
-        user_data = validated_data.pop('user') 
-        user = User.objects.create_user(**user_data) # create_user 함수에 순차적으로 인자 넣어줌
-        profile = Profile.objects.create(user=user, **validated_data)  # validated_data에서 user빠진 나머지(phone_number, address) 넣어줌
-        return profile
+        """
+        회원 가입시, 비밀번호 암호화 처리를 추가
+        """
+        password = validated_data.pop('password')
+        validated_data['password'] = make_password(password)
+        user = Profile.objects.create(**validated_data)
+        return user

@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import LoginSerializer, UserInfoSerializer, SignupSerializer
+from .serializers import LoginSerializer, ProfileSerializer
 from django.contrib.auth import login
 from rest_framework import status
 
@@ -13,7 +13,7 @@ def login_view(request):
     if login_serailizer.is_valid():
         # 유효한 입력의 경우 로그인
         user = login_serailizer.validated_data['user']
-        user_info = UserInfoSerializer(user)
+        user_info = ProfileSerializer(user)
         login(request,user)
         return Response({"detail" : user_info.data},status=status.HTTP_202_ACCEPTED)
     else:
@@ -25,10 +25,10 @@ def signup_view(request):
     회원가입을 처리하는 함수
     """
     print(request.data)
-    signup_serializer = SignupSerializer(data=request.data)
-    if signup_serializer.is_valid():
+    profile_serializer = ProfileSerializer(data=request.data)
+    if profile_serializer.is_valid():
         # 유효한 입력의 경우 회원가입 완료
-        signup_serializer.save() # create 호출
+        profile_serializer.save() # create 호출
         return Response({"detail" : 'signup success'},status=status.HTTP_201_CREATED)
     else:
-        return Response(signup_serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(profile_serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
