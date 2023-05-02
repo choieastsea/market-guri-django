@@ -1,8 +1,15 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import LoginSerializer, ProfileSerializer
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from rest_framework import status
+
+@api_view(['GET'])
+def session_view(request):
+    """
+    사용자의 인증 여부를 반환하는 함수
+    """
+    return Response({"detail" : request.user.is_authenticated}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def login_view(request):
@@ -18,6 +25,11 @@ def login_view(request):
         return Response({"detail" : user_info.data},status=status.HTTP_202_ACCEPTED)
     else:
         return Response(login_serailizer.errors)
+
+@api_view(['GET'])
+def logout_view(request):
+    logout(request)
+    return Response({"detail" : request.user.is_authenticated}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def signup_view(request):

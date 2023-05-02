@@ -148,3 +148,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_HTTPONLY = True -> 요청 headers에 X-CSRFToken을 받아야하므로 해당 쿠키를 js에서 접근가능하도록 설정
+SESSION_COOKIE_HTTPONLY = True
