@@ -158,3 +158,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 # CSRF_COOKIE_HTTPONLY = True -> 요청 headers에 X-CSRFToken을 받아야하므로 해당 쿠키를 js에서 접근가능하도록 설정
 SESSION_COOKIE_HTTPONLY = True
+
+# session 시간 관련
+SESSION_COOKIE_AGE = 10*60
+SESSION_SAVE_EVERY_REQUEST = True
