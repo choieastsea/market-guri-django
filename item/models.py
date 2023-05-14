@@ -5,6 +5,7 @@ class Item(models.Model):
     name = models.CharField(max_length=100, verbose_name='상품명')
     price = models.PositiveIntegerField(verbose_name='상품가격')
     stock_count = models.PositiveIntegerField(verbose_name='남은수량')
+    description = models.TextField(verbose_name='상품설명', default='')
 
     class Meta:
         db_table = 'item'
