@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     # internal apps
     'item.apps.ItemConfig', 
     'myuser.apps.MyuserConfig',
-    'question.apps.QuestionConfig',
+    'qna.apps.QNAConfig',
 ]
 
 MIDDLEWARE = [

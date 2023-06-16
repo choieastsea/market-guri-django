@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .models import Item
 from .serializers import ItemSerializer
-
+from config.paginations import ItemPagination
 
 # ModelViewSet 이용한 CBV
 class ItemModelViewSet(viewsets.ModelViewSet):
@@ -16,6 +16,8 @@ class ItemModelViewSet(viewsets.ModelViewSet):
     """
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+    pagination_class = ItemPagination
+    allowed_methods = ['GET'] # only for get method
 
     def get_queryset(self):
         queryset = Item.objects.all()
@@ -28,13 +30,6 @@ class ItemModelViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True # for partial update
         return super().update(request, *args, **kwargs)
     
-    def list(self, request, *args, **kwargs):
-        # print(request.META['HTTP_ORIGIN']) # CORS error가 발생하더라도 view가 실행됨
-        return super().list(request, *args, **kwargs)
-    
-    def create(self, request, *args, **kwargs):
-        print('create') # CORS error가 발생하더라도 view가 실행됨
-        return super().create(request, *args, **kwargs)
 
 @api_view(['GET'])
 def index(request):
