@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'item.apps.ItemConfig', 
     'myuser.apps.MyuserConfig',
     'qna.apps.QNAConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [
