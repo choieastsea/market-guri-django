@@ -12,14 +12,11 @@ class ItemSerializer(serializers.ModelSerializer):
         return value
 
 class ItemCartSerializer(serializers.ModelSerializer):
-    """
-    Cart에 들어가는 Item을 위한 serializer (item_id를 제외하고는 read_only로!)
-    """
+
     item_id = serializers.IntegerField()
     class Meta:
         model = Item
         fields = "__all__"
-        read_only_fields = ('name', 'price', 'stock_count', 'description')
     
 # class ItemSerializer(serializers.Serializer):
 #     item_id = serializers.IntegerField(label='상품코드', read_only=True)

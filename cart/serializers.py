@@ -6,7 +6,7 @@ class CartSerializer(serializers.ModelSerializer):
     user = serializers.CharField(source='user.username', read_only= True)
     total_price = serializers.SerializerMethodField()
     is_available_now = serializers.SerializerMethodField(method_name='is_available')
-    item = ItemCartSerializer() # 아이템 정보 보여주기 read_only
+
     def get_total_price(self, obj):
         # 총 금액 리턴
         return obj.item.price * obj.amount
@@ -25,9 +25,16 @@ class CartSerializer(serializers.ModelSerializer):
         else:
             return super().create(validated_data)
     
+    # item을 보여줄 때, id만 보여주는 것이 아닌, 안의 내용들을 ItemCartSerializer 통해서 보여주도록 해야함
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['item'] = ItemCartSerializer(instance.item).data
+        return response
+    
     class Meta:
         model = Cart
         fields = "__all__"
+        
 
 class CartUpdateSerializer(serializers.ModelSerializer):
     item = ItemCartSerializer(read_only=True) # 아이템 정보 보여주기 read_only
