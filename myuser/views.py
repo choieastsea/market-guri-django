@@ -3,6 +3,18 @@ from rest_framework.decorators import api_view
 from .serializers import LoginSerializer, ProfileSerializer
 from django.contrib.auth import login, logout
 from rest_framework import status
+from django.middleware.csrf import get_token
+from django.http import HttpResponse
+
+@api_view(['GET'])
+def get_csrf(request):
+    """
+    unsafe method에 대하여 csrf 검증을 위한 토큰을 발급하는 함수
+    """
+    csrf_token = get_token(request)
+    response = HttpResponse()
+    response.set_cookie('csrftoken',csrf_token)
+    return response
 
 @api_view(['GET'])
 def session_view(request):
